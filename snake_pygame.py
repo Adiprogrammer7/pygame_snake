@@ -9,6 +9,7 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 blue = (0, 0, 255)
 red = (255, 0, 0)
+green = (0, 255, 0)
 
 display_width = 800
 display_height = 600
@@ -90,9 +91,11 @@ def gameLoop():
 		pygame.draw.rect(window, blue, [x, y, block_size, block_size])
 		pygame.display.update()
 		clock.tick(FPS)
-		# Crossover handling of snake and apple.
+
+		# Crossover handling of snake and apple then generating new apple
 		if x == rand_apple_x and y == rand_apple_y:
-			print("Snake ate the apple..")
+			rand_apple_x = round(random.randrange(0, display_width-block_size)/10.0)*10.0
+			rand_apple_y = round(random.randrange(0, display_height-block_size)/10.0)*10.0
 
 	pygame.quit()
 	quit()
