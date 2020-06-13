@@ -107,7 +107,9 @@ def gameLoop():
 
 		# to check if snake ran into itself.
 		for each_snake_block in snakelist[:-1]: #all snake block except current snake head which is last list element.
-			
+			if each_snake_block == snakehead:
+				game_over = True
+
 		snake(snakelist) 
 
 		pygame.display.update()
