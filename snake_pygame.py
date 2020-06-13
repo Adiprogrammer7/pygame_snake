@@ -22,6 +22,11 @@ block_size = 10
 FPS = 15
 font = pygame.font.SysFont(None, 30)
 
+# for drawing snake.
+def snake(snakelist): #snakelist for all snake blocks for lengthening.
+	for xny in snakelist: #xny is just a list inside snakelist which has x and y pos.
+		pygame.draw.rect(window, blue, [xny[0], xny[1], block_size, block_size]) 
+
 # To display text to screen.
 def message_to_screen(msg, color):
 	screen_text = font.render(msg, True, color) #created text.
@@ -36,6 +41,8 @@ def gameLoop():
 	y = 300
 	x_change = 0
 	y_change = 0
+	snakelist = [] #all snake block pos
+	snakelen = 1 #allowed snake size
 
 	# Apple stuff.
 	# using round(x/10.0)*10.0 formula to round any num to multiple of 10 so that apple will perfectly align with our snake block.
@@ -88,7 +95,21 @@ def gameLoop():
 
 		window.fill(white)
 		pygame.draw.rect(window, black, [rand_apple_x, rand_apple_y, block_size, block_size])
-		pygame.draw.rect(window, blue, [x, y, block_size, block_size])
+
+		
+		snakehead = [] #for head of snake(new block as x and y changes)
+		snakehead.append(x)
+		snakehead.append(y)
+		snakelist.append(snakehead)
+		# to keep snake length only as much allowed.
+		if len(snakelist) > snakelen:
+			del snakelist[0] #deleting older blocks(blocks at snake's tail)
+
+		# to check if snake ran into itself.
+		for each_snake_block in snakelist[:-1]: #all snake block except current snake head which is last list element.
+			
+		snake(snakelist) 
+
 		pygame.display.update()
 		clock.tick(FPS)
 
@@ -96,6 +117,7 @@ def gameLoop():
 		if x == rand_apple_x and y == rand_apple_y:
 			rand_apple_x = round(random.randrange(0, display_width-block_size)/10.0)*10.0
 			rand_apple_y = round(random.randrange(0, display_height-block_size)/10.0)*10.0
+			snakelen += 1 #to increase snake length
 
 	pygame.quit()
 	quit()
