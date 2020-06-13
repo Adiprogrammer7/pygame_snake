@@ -42,7 +42,7 @@ def gameLoop():
 	x_change = 0
 	y_change = 0
 	snakelist = [] #all snake block pos
-	snakelen = 1 #allowed snake size
+	snakelen = 1 #initial snake size
 
 	# Apple stuff.
 	# using round(x/10.0)*10.0 formula to round any num to multiple of 10 so that apple will perfectly align with our snake block.
