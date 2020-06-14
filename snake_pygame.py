@@ -18,8 +18,9 @@ window = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption("Pysnake")
 
 clock = pygame.time.Clock()
-block_size = 10
-FPS = 15
+block_size = 15
+apple_size = 20
+FPS = 10
 font = pygame.font.SysFont(None, 30)
 
 # for drawing snake.
@@ -27,10 +28,17 @@ def snake(snakelist): #snakelist for all snake blocks for lengthening.
 	for xny in snakelist: #xny is just a list inside snakelist which has x and y pos.
 		pygame.draw.rect(window, blue, [xny[0], xny[1], block_size, block_size]) 
 
-# To display text to screen.
+# to get text surface and text rectangle.
+def text_objects(text, color):
+	text_surf = font.render(text, True, color)
+	text_rect = text_surf.get_rect()
+	return text_surf, text_rect
+
+# To display text centered to screen.
 def message_to_screen(msg, color):
-	screen_text = font.render(msg, True, color) #created text.
-	window.blit(screen_text, [display_width/2, display_height/2]) #now defined postion for text.
+	text_surf, text_rect = text_objects(msg, color) #getting those objects for out text.
+	text_rect.center = (display_width/2), (display_height/2)  #alligning center of our text rect with screen center.
+	window.blit(text_surf, text_rect)
 
 def gameLoop():
 	game_exit = False
@@ -44,10 +52,10 @@ def gameLoop():
 	snakelist = [] #all snake block pos
 	snakelen = 1 #initial snake size
 
+	# round(x/10.0)*10.0 formula can be used to round any num to multiple of 10.
 	# Apple stuff.
-	# using round(x/10.0)*10.0 formula to round any num to multiple of 10 so that apple will perfectly align with our snake block.
-	rand_apple_x = round(random.randrange(0, display_width-block_size)/10.0)*10.0
-	rand_apple_y = round(random.randrange(0, display_height-block_size)/10.0)*10.0
+	rand_apple_x = round(random.randrange(0, display_width-apple_size))
+	rand_apple_y = round(random.randrange(0, display_height-apple_size))
 
 	# Main game loop.
 	while not game_exit:
@@ -59,6 +67,9 @@ def gameLoop():
 			pygame.display.update()
 			# taking input from user either to play again or quit.
 			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					game_over = False
+					game_exit = True
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_q:
 						game_over = False
@@ -94,7 +105,7 @@ def gameLoop():
 		y += y_change
 
 		window.fill(white)
-		pygame.draw.rect(window, black, [rand_apple_x, rand_apple_y, block_size, block_size])
+		pygame.draw.rect(window, black, [rand_apple_x, rand_apple_y, apple_size, apple_size])
 
 		
 		snakehead = [] #for head of snake(new block as x and y changes)
@@ -116,10 +127,12 @@ def gameLoop():
 		clock.tick(FPS)
 
 		# Crossover handling of snake and apple then generating new apple
-		if x == rand_apple_x and y == rand_apple_y:
-			rand_apple_x = round(random.randrange(0, display_width-block_size)/10.0)*10.0
-			rand_apple_y = round(random.randrange(0, display_height-block_size)/10.0)*10.0
-			snakelen += 1 #to increase snake length
+		# when either of snake's two x boundries is bet. both x boundries of apple and either of two snake's y boundries is bet. apple's y boundries.
+		if (x > rand_apple_x and x < rand_apple_x + apple_size) or (x + block_size > rand_apple_x and x + block_size < rand_apple_x + apple_size):  # X crossover
+			if (y > rand_apple_y and y < rand_apple_y + apple_size) or (y + block_size > rand_apple_y and y + block_size < rand_apple_y + apple_size): # Y crossover
+				rand_apple_x = round(random.randrange(0, display_width-block_size))
+				rand_apple_y = round(random.randrange(0, display_height-block_size))
+				snakelen += 1 #to increase snake length
 
 	pygame.quit()
 	quit()
