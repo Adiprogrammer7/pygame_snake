@@ -9,7 +9,7 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 blue = (0, 0, 255)
 red = (255, 0, 0)
-green = (0, 255, 0)
+green = (0, 180, 0)
 
 display_width = 800
 display_height = 600
@@ -21,7 +21,6 @@ clock = pygame.time.Clock()
 block_size = 15
 apple_size = 20
 FPS = 10
-font = pygame.font.SysFont(None, 30)
 
 # for drawing snake.
 def snake(snakelist): #snakelist for all snake blocks for lengthening.
@@ -29,16 +28,36 @@ def snake(snakelist): #snakelist for all snake blocks for lengthening.
 		pygame.draw.rect(window, blue, [xny[0], xny[1], block_size, block_size]) 
 
 # to get text surface and text rectangle.
-def text_objects(text, color):
+def text_objects(text, color, font_size):
+	font = pygame.font.SysFont("comicsansms", font_size)
 	text_surf = font.render(text, True, color)
 	text_rect = text_surf.get_rect()
 	return text_surf, text_rect
 
 # To display text centered to screen.
-def message_to_screen(msg, color):
-	text_surf, text_rect = text_objects(msg, color) #getting those objects for out text.
-	text_rect.center = (display_width/2), (display_height/2)  #alligning center of our text rect with screen center.
+# y-asix pos of text can be changed by changing y_displacement variable. 
+def message_to_screen(msg, color, y_displacement= 0, font_size= 26):
+	text_surf, text_rect = text_objects(msg, color, font_size) #getting those objects for out text.
+	text_rect.center = (display_width/2), (display_height/2) + y_displacement  #alligning center of our text rect with screen center/with some y-axis displacement.
 	window.blit(text_surf, text_rect)
+
+def game_intro():
+	intro = True
+	while intro:
+		window.fill(white)
+		message_to_screen("Welcome to Pysnake", green, -65, 54)
+		message_to_screen("Just eat as much as apples to gain length and score", black, font_size= 22)
+		message_to_screen("And don't run into yourself like an idiot :)", black, 35, font_size= 22)
+		message_to_screen("Press any key to start the game...", black, 100)
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+			if event.type == pygame.KEYDOWN:
+				intro = False
+				
+		pygame.display.update()
+		clock.tick(5)	
 
 def gameLoop():
 	game_exit = False
@@ -63,7 +82,8 @@ def gameLoop():
 		# Loop which will run when we lose in game.
 		while game_over == True:
 			window.fill(white)
-			message_to_screen("You lost, press 'p' to play again or 'q' to exit.", red)
+			message_to_screen("Game Over!", red, -50, font_size= 54)
+			message_to_screen("Press 'p' to play again or 'q' to quit", black, 20, font_size= 36)
 			pygame.display.update()
 			# taking input from user either to play again or quit.
 			for event in pygame.event.get():
@@ -137,4 +157,5 @@ def gameLoop():
 	pygame.quit()
 	quit()
 
+game_intro()
 gameLoop()
