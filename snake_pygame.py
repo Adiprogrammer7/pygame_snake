@@ -15,11 +15,14 @@ display_width = 800
 display_height = 600
 
 window = pygame.display.set_mode((display_width, display_height))
+apple_img = pygame.image.load("img/apple_sprite.png")
+icon = pygame.image.load("img/icon.jpeg")
 pygame.display.set_caption("Pysnake")
+pygame.display.set_icon(icon)
 
 clock = pygame.time.Clock()
 block_size = 15
-apple_size = 20
+apple_size = 30  #changing apple_size will need to change apple sprite size too. 
 FPS = 10
 
 # for drawing snake.
@@ -41,6 +44,25 @@ def message_to_screen(msg, color, y_displacement= 0, font_size= 26):
 	text_rect.center = (display_width/2), (display_height/2) + y_displacement  #alligning center of our text rect with screen center/with some y-axis displacement.
 	window.blit(text_surf, text_rect)
 
+def score(score_num):
+	font = pygame.font.SysFont("comicsansms", 22)
+	text = font.render("Score: {}".format(str(score_num)), True, black)
+	window.blit(text, (0, 0))
+
+def pause():
+	pause = True
+	message_to_screen("Paused", black, -50, 50)
+	message_to_screen("Press any key to continue...", black, 10, 24 )
+	while pause:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				quit()
+			if event.type == pygame.KEYDOWN:
+				pause = False
+		pygame.display.update()
+		clock.tick(5)
+
 def game_intro():
 	intro = True
 	while intro:
@@ -49,6 +71,7 @@ def game_intro():
 		message_to_screen("Just eat as much as apples to gain length and score", black, font_size= 22)
 		message_to_screen("And don't run into yourself like an idiot :)", black, 35, font_size= 22)
 		message_to_screen("Press any key to start the game...", black, 100)
+		message_to_screen("(you can press 'ESC' to pause the game)", black, 130, 22)
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
@@ -57,7 +80,7 @@ def game_intro():
 				intro = False
 				
 		pygame.display.update()
-		clock.tick(5)	
+		clock.tick(15)	
 
 def gameLoop():
 	game_exit = False
@@ -70,6 +93,7 @@ def gameLoop():
 	y_change = 0
 	snakelist = [] #all snake block pos
 	snakelen = 1 #initial snake size
+	score_num = 0
 
 	# round(x/10.0)*10.0 formula can be used to round any num to multiple of 10.
 	# Apple stuff.
@@ -115,6 +139,8 @@ def gameLoop():
 				elif event.key == pygame.K_DOWN:
 					x_change = 0
 					y_change = block_size
+				elif event.key == pygame.K_ESCAPE:
+					pause()
 
 		# Boundary condition.
 		if x >= display_width or x<0 or y >= display_height or y<0:
@@ -125,8 +151,7 @@ def gameLoop():
 		y += y_change
 
 		window.fill(white)
-		pygame.draw.rect(window, black, [rand_apple_x, rand_apple_y, apple_size, apple_size])
-
+		window.blit(apple_img, (rand_apple_x, rand_apple_y))
 		
 		snakehead = [] #for head of snake(new block as x and y changes)
 		snakehead.append(x)
@@ -142,7 +167,7 @@ def gameLoop():
 				game_over = True
 
 		snake(snakelist) 
-
+		score(score_num)
 		pygame.display.update()
 		clock.tick(FPS)
 
@@ -150,9 +175,10 @@ def gameLoop():
 		# when either of snake's two x boundries is bet. both x boundries of apple and either of two snake's y boundries is bet. apple's y boundries.
 		if (x > rand_apple_x and x < rand_apple_x + apple_size) or (x + block_size > rand_apple_x and x + block_size < rand_apple_x + apple_size):  # X crossover
 			if (y > rand_apple_y and y < rand_apple_y + apple_size) or (y + block_size > rand_apple_y and y + block_size < rand_apple_y + apple_size): # Y crossover
-				rand_apple_x = round(random.randrange(0, display_width-block_size))
-				rand_apple_y = round(random.randrange(0, display_height-block_size))
+				rand_apple_x = round(random.randrange(0, display_width-apple_size))
+				rand_apple_y = round(random.randrange(0, display_height-apple_size))
 				snakelen += 1 #to increase snake length
+				score_num += 1
 
 	pygame.quit()
 	quit()
