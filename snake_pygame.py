@@ -61,7 +61,7 @@ def pause():
 			if event.type == pygame.KEYDOWN:
 				pause = False
 		pygame.display.update()
-		clock.tick(5)
+		clock.tick(4)
 
 def game_intro():
 	intro = True
@@ -80,7 +80,7 @@ def game_intro():
 				intro = False
 				
 		pygame.display.update()
-		clock.tick(15)	
+		clock.tick(4)	
 
 def gameLoop():
 	game_exit = False
